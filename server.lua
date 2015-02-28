@@ -1,4 +1,3 @@
-local bit = require 'bit'
 local class = require 'ext.class'
 require 'netrefl.serverconn'
 require 'netrefl.netfield'
