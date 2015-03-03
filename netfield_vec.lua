@@ -1,6 +1,6 @@
 local class = require 'ext.class'
 require 'vec'
-require 'ast'
+require 'parser.ast'
 require 'netrefl.netfield'
 
 -- net encode/decode
