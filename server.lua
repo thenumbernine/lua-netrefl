@@ -1,5 +1,6 @@
 local class = require 'ext.class'
-require 'netrefl.serverconn'
+local LocalServerConn = require 'netrefl.localserverconn'
+local RemoteServerConn = require 'netrefl.localserverconn'
 require 'netrefl.netfield'
 local ThreadManager = require 'threadmanager'
 local err, socket = pcall(require, 'socket')

@@ -71,6 +71,7 @@ thoughts on remotecall ...
 local table = require 'ext.table'	-- used with :encode
 local class = require 'ext.class'
 local Server = require 'netrefl.server'
+local RemoteClientConn = require 'netrefl.remoteclientconn'
 
 local NetCom = class()
 

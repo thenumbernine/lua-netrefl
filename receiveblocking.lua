@@ -1,6 +1,5 @@
-
 -- coroutine function that blocks til it gets something
-function receiveBlocking(conn, waitduration, secondsTimerFunc)
+local function receiveBlocking(conn, waitduration, secondsTimerFunc)
 	coroutine.yield()
 	
 	if not secondsTimerFunc then
@@ -29,3 +28,5 @@ function receiveBlocking(conn, waitduration, secondsTimerFunc)
 
 	return data
 end
+
+return receiveBlocking
