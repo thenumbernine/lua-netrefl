@@ -12,7 +12,7 @@ remote conns just hold socket info for talking, and the remote computer has to m
 --]]
 
 
-require 'ext.table'
+local table = require 'ext.table'
 local class = require 'ext.class'
 require 'netrefl.clientconn'
 require 'netrefl.netfield'

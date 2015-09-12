@@ -1,4 +1,4 @@
-require 'ext'
+local class = require 'ext.class'
 
 local WordParser = class()
 
@@ -28,6 +28,10 @@ function WordParser:expect(token)
 	end
 	self:next()
 	return true
+end
+
+function WordParser:rest()
+	return self.data:sub(self.pos)
 end
 
 return WordParser

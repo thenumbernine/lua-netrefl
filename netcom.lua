@@ -68,7 +68,7 @@ thoughts on remotecall ...
 		self.conn:netcall{'clientSetArmyDestPos', self.selectedArmy, self.selectedArmy.pos + vec3(-rdx, -rdy, 0) * (3 * self.selectedArmy.speed)}
 --]]
 
-require 'ext.table'	-- used with :encode
+local table = require 'ext.table'	-- used with :encode
 local class = require 'ext.class'
 local Server = require 'netrefl.server'
 
