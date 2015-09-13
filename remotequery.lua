@@ -1,4 +1,5 @@
 local WordParser = require 'netrefl.wordparser'
+local class = require 'ext.class'
 
 -- I don't know where else to put this
 -- somewhere shared by ServerConn and Client alike ...
