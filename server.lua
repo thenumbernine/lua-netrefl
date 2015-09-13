@@ -1,4 +1,5 @@
 local class = require 'ext.class'
+local table = require 'ext.table'
 local LocalServerConn = require 'netrefl.localserverconn'
 local RemoteServerConn = require 'netrefl.localserverconn'
 require 'netrefl.netfield'
