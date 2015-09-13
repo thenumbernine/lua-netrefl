@@ -2,7 +2,7 @@ local class = require 'ext.class'
 require 'netrefl.netfield'
 require 'netrefl.netfield_vec'
 local ServerConn = require 'netrefl.serverconn'
-local LocalClientConn = require 'netrefl.clientconn'
+local LocalClientConn = require 'netrefl.localclientconn'
 
 
 -- messages from clientside to serverside
