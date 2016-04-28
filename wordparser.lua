@@ -31,7 +31,11 @@ function WordParser:expect(token)
 end
 
 function WordParser:rest()
-	return self.token .. ' '.. self.data:sub(self.pos)
+	if self.pos < #self.data then
+		return self.token .. ' '.. self.data:sub(self.pos)
+	else
+		return self.token
+	end
 end
 
 return WordParser
