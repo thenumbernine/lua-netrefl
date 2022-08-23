@@ -4,7 +4,7 @@ there is already a netFieldList that is supposed to act like this, but it's used
 TODO unify the two list objects - netcalls and netfields?
 --]]
 
-function createNetFieldList(netfield)
+local function createNetFieldList(netfield)
 	assert(netfield)
 	return {
 		__netencode = function(list)
@@ -26,7 +26,7 @@ function createNetFieldList(netfield)
 	}
 end
 
-function createConnFieldList(connfield)
+local function createConnFieldList(connfield)
 	assert(connfield)
 	return {
 		connEncode = function(conn, list)
@@ -48,7 +48,7 @@ function createConnFieldList(connfield)
 	}
 end
 
-function createFieldOrNil(netfield)
+local function createFieldOrNil(netfield)
 	assert(netfield)
 	return {
 		__netencode = function(v)
@@ -61,3 +61,9 @@ function createFieldOrNil(netfield)
 		end,
 	}
 end
+
+return {
+	createNetFieldList = createNetFieldList,
+	createConnFieldList = createConnFieldList,
+	createFieldOrNil = createFieldOrNil,
+}

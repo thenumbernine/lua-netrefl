@@ -1,6 +1,6 @@
 local class = require 'ext.class'
-require 'netrefl.netfield'
-require 'netrefl.netfield_vec'
+--require 'netrefl.netfield'
+--require 'netrefl.netfield_vec'
 local ServerConn = require 'netrefl.serverconn'
 local LocalClientConn = require 'netrefl.localclientconn'
 

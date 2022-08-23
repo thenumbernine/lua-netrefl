@@ -1,9 +1,12 @@
 local class = require 'ext.class'
-require 'netrefl.netfield'
-require 'netrefl.netfield_vec'
+--require 'netrefl.netfield'
+--require 'netrefl.netfield_vec'
 local ServerConn = require 'netrefl.serverconn'
 local WordParser = require 'netrefl.wordparser'
 local RemoteQuery = require 'netrefl.remotequery'
+
+local netSendObj = require 'netrefl.netfield'.netSendObj
+local netReceiveObj = require 'netrefl.netfield'.netReceiveObj
 
 local RemoteServerConn = class(ServerConn)
 

@@ -8,6 +8,8 @@ local class = require 'ext.class'
 local ClientConn = require 'netrefl.clientconn'
 -- messages common to all subclasses
 
+local netSendObj = require 'netrefl.netfield'.netSendObj
+local netReceiveObj = require 'netrefl.netfield'.netReceiveObj
 
 --[[
 this is gonna do a lot of the work that Server does

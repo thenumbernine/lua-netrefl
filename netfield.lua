@@ -35,11 +35,12 @@ or just do that up front, and have those matching method names be the ones that 
 
 local class = require 'ext.class'
 
-function netescape(s)
+
+local function netescape(s)
 	return (s:gsub('%$','%$%$'):gsub(' ', '%$s'))
 end
 
-function netunescape(s)
+local function netunescape(s)
 	return (s:gsub('%$s', ' '):gsub('%$%$', '%$'))
 end
 
@@ -51,14 +52,14 @@ local function identity(x) return x end
 local function notEquals(a,b) return a ~= b end	-- typical 'compare's are equals, not notEquals...
 
 -- TODO - AST, inlining, and regen and cache flattened functions
-function netSendObj(socket, prefix, thisObj, lastObj)
+local function netSendObj(socket, prefix, thisObj, lastObj)
 	if not thisObj.__netfields then error("prefix "..prefix.." had no __netfields") end
 	for fieldName, info in pairs(thisObj.__netfields) do
 		info:__netsend(socket, prefix, fieldName, thisObj, lastObj, thisObj[fieldName])
 	end
 end
 
-function netReceiveObj(parser, field, obj)
+local function netReceiveObj(parser, field, obj)
 	local info = obj.__netfields[field]
 	
 	-- we still have some object commands that don't apply to netfields
@@ -73,7 +74,7 @@ function netReceiveObj(parser, field, obj)
 end
 
 -- default field
-NetField = class{
+local NetField = class{
 	-- utility functions:
 	__netencode = tostring,
 	__netparse = function(p) return p:next() end,
@@ -92,7 +93,7 @@ NetField = class{
 }
 
 
-NetFieldObject = class()
+local NetFieldObject = class()
 
 -- common __netsend for objects, especially members of arrays...
 -- should this be a method of list, or of its members?  probably an allocator of its members?
@@ -123,14 +124,14 @@ function NetFieldObject.__netparse(parser, lastValue, thisObj)
 end
 
 
-netFieldBoolean = class(NetField)
+local netFieldBoolean = class(NetField)
 netFieldBoolean.__netparse = function(p) return p:next() == 'true' end
 
-netFieldNumber = class(NetField)
+local netFieldNumber = class(NetField)
 netFieldNumber.__netencode = identity		-- concat as-is
 netFieldNumber.__netparse = function(p) return tonumber(p:next()) end
 
-netFieldNumberOrNil = class(NetField)
+local netFieldNumberOrNil = class(NetField)
 netFieldNumberOrNil.__netencode = function(s) 
 	if s then return tostring(s) end
 	return ''
@@ -140,11 +141,11 @@ netFieldNumberOrNil.__netparse = function(p)
 	if s ~= '' then return tonumber(s) end
 end
 
-netFieldString = class(NetField)
+local netFieldString = class(NetField)
 netFieldString.__netencode = netescape		-- concat as-is
 netFieldString.__netparse = function(p) return netunescape(p:next()) end		-- return the next token as-is
 
-netFieldStringOrNil = class(NetField)
+local netFieldStringOrNil = class(NetField)
 netFieldStringOrNil.__netencode = function(s)
 	if s then return netescape(s) end
 	return ''
@@ -175,7 +176,7 @@ end
 
 -- define upfront the list type, like netFieldList(netFieldNumber)
 -- that way the decoder knows what to expect.  the encoder could deduce it from the metatable no problem
-function netFieldList(netField)
+local function netFieldList(netField)
 	assert(netField)
 	return {
 		__netparse = function(parser, lastValue, thisObj)
@@ -231,4 +232,14 @@ function netFieldList(netField)
 	}
 end
 
-
+return {
+	netSendObj = netSendObj,
+	netReceiveObj = netReceiveObj,
+	NetField = NetField,
+	netFieldBoolean = netFieldBoolean,
+	netFieldNumber = netFieldNumber,
+	netFieldNumberOrNil = netFieldNumberOrNil,
+	netFieldString = netFieldString,
+	netFieldStringOrNil = netFieldStringOrNil,
+	netFieldList = netFieldList,
+}

@@ -1,14 +1,27 @@
 local class = require 'ext.class'
 local ast = require 'parser.ast'
-require 'vec'
-require 'netrefl.netfield'
+local NetField = require 'netrefl.netfield'.NetField
+
+local vec2 = require 'vec.vec2'
+local vec3 = require 'vec.vec3'
+local vec4 = require 'vec.vec4'
+
+-- ast.exec env, for vec table access
+local env = setmetatable({}, {__index=_G})
+env.vecClasses = {
+	[2] = vec2, 
+	[3] = vec3, 
+	[4] = vec4,
+}
+
+local resultClasses = {}
 
 -- net encode/decode
 for dim=2,4 do
 	local classname = 'vec'..dim
 	local netclassname = 'netFieldVec'..dim
 	local nc = class(NetField)
-	_G[netclassname] = nc
+	resultClasses[netclassname] = nc
 
 	do
 		local exprs = {}
@@ -24,7 +37,7 @@ for dim=2,4 do
 			ast._return(
 				ast._concat(unpack(exprs))
 		))
-		ast.exec(nc.func__netencode)()
+		ast.exec(nc.func__netencode, nil, nil, env)()
 	end
 
 	do
@@ -39,7 +52,7 @@ for dim=2,4 do
 				ast._call(classname,
 					unpack(exprs)
 		)))
-		ast.exec(nc.func__netparse)()
+		ast.exec(nc.func__netparse, nil, nil, env)()
 	end
 
 	do
@@ -61,7 +74,7 @@ for dim=2,4 do
 			{ast._arg(),ast._arg()},	-- src, body
 			unpack(stmts)
 		)
-		ast.exec(nc.func__netcopy)()
+		ast.exec(nc.func__netcopy, nil, nil, env)()
 	end
 	
 	-- should be the same as not a == b ?
@@ -69,3 +82,4 @@ for dim=2,4 do
 	--nc.__netsend = NetField.__netsend	-- inherit from parent
 end
 
+return resultClasses

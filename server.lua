@@ -2,7 +2,7 @@ local class = require 'ext.class'
 local table = require 'ext.table'
 local LocalServerConn = require 'netrefl.localserverconn'
 local RemoteServerConn = require 'netrefl.localserverconn'
-require 'netrefl.netfield'
+--require 'netrefl.netfield'
 local ThreadManager = require 'threadmanager'
 local err, socket = pcall(require, 'socket')
 if not err then socket = nil end
