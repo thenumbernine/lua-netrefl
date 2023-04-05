@@ -1,5 +1,4 @@
 local class = require 'ext.class'
-local fromlua = require 'ext.fromlua'
 local ast = require 'parser.ast'
 local NetField = require 'netrefl.netfield'.NetField
 
@@ -23,6 +22,7 @@ for dim=2,4 do
 	local netclassname = 'netFieldVec'..dim
 	local nc = class(NetField)
 	resultClasses[netclassname] = nc
+	env[netclassname] = nc
 
 	do
 		local exprs = {}
@@ -33,12 +33,12 @@ for dim=2,4 do
 			table.insert(exprs, ast._index(ast._arg(1), i))
 		end
 		nc.func__netencode = ast._function(
-			nil,
+			netclassname..'.__netencode',
 			{ast._arg()},
 			ast._return(
 				ast._concat(unpack(exprs))
 		))
-		nc.__netencode = fromlua(tostring(nc.func__netencode))
+		ast.exec(nc.func__netencode, nil, nil, env)()
 	end
 
 	do
@@ -47,13 +47,13 @@ for dim=2,4 do
 			table.insert(exprs, ast._call('arg1:next'))
 		end
 		nc.func__netparse = ast._function(
-			nil,
+			netclassname..'.__netparse',
 			{ast._arg()},
 			ast._return(
 				ast._call(classname,
 					unpack(exprs)
 		)))
-		nc.__netparse = fromlua(tostring(nc.func__netparse))
+		ast.exec(nc.func__netparse, nil, nil, env)()
 	end
 
 	do
@@ -71,11 +71,11 @@ for dim=2,4 do
 		end
 		table.insert(stmts, ast._return(ast._arg(2)))
 		nc.func__netcopy = ast._function(
-			nil,
+			netclassname..'.__netcopy',
 			{ast._arg(),ast._arg()},	-- src, body
 			unpack(stmts)
 		)
-		nc.__netcopy = fromlua(tostring(nc.func__netcopy))
+		ast.exec(nc.func__netcopy, nil, nil, env)()
 	end
 	
 	-- should be the same as not a == b ?
