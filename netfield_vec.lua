@@ -1,4 +1,5 @@
 local class = require 'ext.class'
+local fromlua = require 'ext.fromlua'
 local ast = require 'parser.ast'
 local NetField = require 'netrefl.netfield'.NetField
 
@@ -32,12 +33,12 @@ for dim=2,4 do
 			table.insert(exprs, ast._index(ast._arg(1), i))
 		end
 		nc.func__netencode = ast._function(
-			netclassname..'.__netencode',
+			nil,
 			{ast._arg()},
 			ast._return(
 				ast._concat(unpack(exprs))
 		))
-		ast.exec(nc.func__netencode, nil, nil, env)()
+		nc.__netencode = fromlua(tostring(nc.func__netencode))
 	end
 
 	do
@@ -46,13 +47,13 @@ for dim=2,4 do
 			table.insert(exprs, ast._call('arg1:next'))
 		end
 		nc.func__netparse = ast._function(
-			netclassname..'.__netparse',
+			nil,
 			{ast._arg()},
 			ast._return(
 				ast._call(classname,
 					unpack(exprs)
 		)))
-		ast.exec(nc.func__netparse, nil, nil, env)()
+		nc.__netparse = fromlua(tostring(nc.func__netparse))
 	end
 
 	do
@@ -70,11 +71,11 @@ for dim=2,4 do
 		end
 		table.insert(stmts, ast._return(ast._arg(2)))
 		nc.func__netcopy = ast._function(
-			netclassname..'.__netcopy',
+			nil,
 			{ast._arg(),ast._arg()},	-- src, body
 			unpack(stmts)
 		)
-		ast.exec(nc.func__netcopy, nil, nil, env)()
+		nc.__netcopy = fromlua(tostring(nc.func__netcopy))
 	end
 	
 	-- should be the same as not a == b ?
