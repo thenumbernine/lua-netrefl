@@ -233,9 +233,12 @@ local function netFieldList(netField)
 end
 
 return {
+	netescape = netescape,
+	netunescape = netunescape,
+	NetField = NetField,
+	NetFieldObject = NetFieldObject,
 	netSendObj = netSendObj,
 	netReceiveObj = netReceiveObj,
-	NetField = NetField,
 	netFieldBoolean = netFieldBoolean,
 	netFieldNumber = netFieldNumber,
 	netFieldNumberOrNil = netFieldNumberOrNil,

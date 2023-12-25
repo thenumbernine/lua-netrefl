@@ -46,7 +46,7 @@ function Server:init(args)
 	end
 	
 	if socket then -- init net listen
-		self.socket = socket.bind('localhost', args.listenport or 12345)
+		self.socket = assert(socket.bind('localhost', args.listenport or 12345))
 		self.socketaddr, self.socketport = self.socket:getsockname()
 		self.socket:settimeout(0, 'b')
 	end
