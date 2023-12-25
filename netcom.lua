@@ -102,7 +102,7 @@ args:
 	addr = (optional) address to connect to
 	port = port to connect to / listen on
 	testingRemote = enable to test remote connections
-	onConnect(clientConn) = (optional) function to call once a successful connection has been established
+	onConnect(clientConn) = function to call once a successful connection has been established
 	threads = (optional) thread manager to pass to server
 returns:
 	clientConn, nil, remoteClientConn		-- for remote games (and the two objects match)
