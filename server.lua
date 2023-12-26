@@ -1,3 +1,4 @@
+local receiveBlocking = require 'netrefl.receiveblocking'
 local class = require 'ext.class'
 local table = require 'ext.table'
 local LocalServerConn = require 'netrefl.localserverconn'
