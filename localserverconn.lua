@@ -1,13 +1,11 @@
-local class = require 'ext.class'
 --require 'netrefl.netfield'
 --require 'netrefl.netfield_vec'
 local ServerConn = require 'netrefl.serverconn'
 local LocalClientConn = require 'netrefl.localclientconn'
 
-
 -- messages from clientside to serverside
 
-local LocalServerConn = class(ServerConn)
+local LocalServerConn = ServerConn:subclass()
 
 function LocalServerConn:init(server)
 	LocalServerConn.super.init(self, server)

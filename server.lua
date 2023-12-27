@@ -98,17 +98,17 @@ end
 
 -- create a remote connection
 function Server:connectRemoteCoroutine(client)
-	
+--DEBUG:print('Server:connectRemoteCoroutine', client)	
 	local recv, reason = receiveBlocking(client, 10)
 	if not recv then error("Server waiting for handshake receive failed with error "..tostring(reason)) end
 	local expect = 'litagano'
 	assert(recv == expect, "handshake failed.  expected "..expect..' but got '..tostring(recv))
+--DEBUG:print('Server:connectRemoteCoroutine send motscoud')
 	client:send('motscoud\n')
 
 	local serverConn = RemoteServerConn(self, client)
-
 	self.serverConns:insert(serverConn)
-	
+--DEBUG:print('Server:connectRemoteCoroutine returning', serverConn)
 	return serverConn
 end
 

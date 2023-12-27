@@ -3,7 +3,7 @@ local function receiveBlocking(conn, waitduration, secondsTimerFunc)
 	coroutine.yield()
 	
 	if not secondsTimerFunc then
-		secondsTimerFunc = os.time	-- better provide your own ...
+		secondsTimerFunc = require 'ext.timer'.getTime
 	end
 
 	local endtime
@@ -14,14 +14,22 @@ local function receiveBlocking(conn, waitduration, secondsTimerFunc)
 	repeat
 		coroutine.yield()
 		local reason
-		data, reason = conn:receive('*l')
+		data, reason = conn:receive'*l'
+--DEBUG:print(secondsTimerFunc(), 'conn:receive', data, reason)	
 		if not data then
-			if reason ~= 'timeout' then
-				return nil, reason		-- error() ?
-			end
-			-- else continue
-			if waitduration and secondsTimerFunc() > endtime then
-				return nil, 'timeout'
+			if reason == 'wantread' then
+--DEBUG:print(secondsTimerFunc(), 'got wantread, calling select...')
+				socket.select(nil, {conn})
+--DEBUG:print(secondsTimerFunc(), '...done calling select')
+			else
+				if reason ~= 'timeout' then
+					return nil, reason		-- error() ?
+				end
+				-- else continue
+				if waitduration and secondsTimerFunc() > endtime then
+--DEBUG:print(secondsTimerFunc(), '...exceeded wait duration of '..waitduration..', returning "timeout"')
+					return nil, 'timeout'
+				end
 			end
 		end
 	until data ~= nil

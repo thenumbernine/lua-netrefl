@@ -1,4 +1,3 @@
-local class = require 'ext.class'
 --require 'netrefl.netfield'
 --require 'netrefl.netfield_vec'
 local ServerConn = require 'netrefl.serverconn'
@@ -8,10 +7,12 @@ local RemoteQuery = require 'netrefl.remotequery'
 local netSendObj = require 'netrefl.netfield'.netSendObj
 local netReceiveObj = require 'netrefl.netfield'.netReceiveObj
 
-local RemoteServerConn = class(ServerConn)
+local RemoteServerConn = ServerConn:subclass()
 
 function RemoteServerConn:init(server, sock)
+--DEBUG:print('RemoteServerConn:init', 	server, sock)
 	RemoteServerConn.super.init(self, server)
+	sock:setoption('keepalive', true)
 	sock:settimeout(0, 'b')
 
 	self.socket = sock
@@ -24,8 +25,10 @@ function RemoteServerConn:init(server, sock)
 end
 
 function RemoteServerConn:isActive()
-	return coroutine.status(self.listenThread) ~= 'dead'
+	local active = coroutine.status(self.listenThread) ~= 'dead'
 		and coroutine.status(self.sendThread) ~= 'dead'
+--DEBUG:print('RemoteServerConn:isActive()', active)
+	return active
 end
 
 local function waitFor(obj, field)
@@ -38,6 +41,7 @@ end
 -- messages from clientside to serverside
 
 function RemoteServerConn:listenCoroutine()
+--DEBUG:print('RemoteServerConn:listenCoroutine begin')
 	local netcom = self.server.netcom
 	
 	coroutine.yield()
@@ -45,6 +49,8 @@ function RemoteServerConn:listenCoroutine()
 	local parser = WordParser()
 	local result = {}
 
+--DEBUG:print('self.server.socket:getsockname()', self.server.socket:getsockname())
+--DEBUG:print('self.socket:getsockname()', self.socket:getsockname())
 	while self.server
 	and self.server.socket:getsockname()		-- while we're alive
 	do	-- while we have a server, we're listening

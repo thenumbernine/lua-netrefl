@@ -4,7 +4,6 @@ local receiveBlocking = require 'netrefl.receiveblocking'
 local WordParser = require 'netrefl.wordparser'
 local RemoteQuery = require 'netrefl.remotequery'
 local ThreadManager = require 'threadmanager'
-local class = require 'ext.class'
 local ClientConn = require 'netrefl.clientconn'
 -- messages common to all subclasses
 
@@ -18,7 +17,7 @@ in fact it'd be better described as a mirror of Server rather than a mirror of L
 it and Server are both responsible for holding local data, like World and Stage
 it and LocalClientConn are both responsible for message passing to their BattleClient and WorldClient's
 --]]
-local RemoteClientConn = class(ClientConn)
+local RemoteClientConn = ClientConn:subclass()
 
 --[[
 args:
@@ -29,6 +28,7 @@ all client conns need a netcall object
 local ones can get them from their server
 --]]
 function RemoteClientConn:init(args)
+--DEBUG:print('RemoteClientConn:init', args)
 	RemoteClientConn.super.init(self)
 	
 	self.netcom = assert(args.netcom)
@@ -49,7 +49,7 @@ args:
 	success
 --]]
 function RemoteClientConn:connect(args)	
-	print('RemoteClientConn connecting to addr',args.addr,'port',args.port)
+--DEBUG:print('RemoteClientConn:connect addr',args.addr,'port',args.port)
 	local sock, reason = socket.connect(args.addr, args.port)
 	if not sock then
 		print('failed to connect: '..tostring(reason))
@@ -125,7 +125,7 @@ function RemoteClientConn:listenCoroutine()
 --]]	
 		
 			repeat
-				
+--DEBUG:print("RemoteClientConn:listenCoroutine got data", data)
 				parser:setstr(data)
 
 				if #data > 0 then

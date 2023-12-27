@@ -1,4 +1,3 @@
-local class = require 'ext.class'
 local ast = require 'parser.ast'
 local NetField = require 'netrefl.netfield'.NetField
 
@@ -20,7 +19,7 @@ local resultClasses = {}
 for dim=2,4 do
 	local classname = 'vec'..dim
 	local netclassname = 'netFieldVec'..dim
-	local nc = class(NetField)
+	local nc = NetField:subclass()
 	resultClasses[netclassname] = nc
 	env[netclassname] = nc
 

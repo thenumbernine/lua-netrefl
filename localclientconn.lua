@@ -1,7 +1,6 @@
-local class = require 'ext.class'
 local ClientConn = require 'netrefl.clientconn'
 
-local LocalClientConn = class(ClientConn)
+local LocalClientConn = ClientConn:subclass()
 
 function LocalClientConn:init(localServerConn, server)
 	LocalClientConn.super.init(self)

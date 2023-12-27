@@ -124,14 +124,14 @@ function NetFieldObject.__netparse(parser, lastValue, thisObj)
 end
 
 
-local netFieldBoolean = class(NetField)
+local netFieldBoolean = NetField:subclass()
 netFieldBoolean.__netparse = function(p) return p:next() == 'true' end
 
-local netFieldNumber = class(NetField)
+local netFieldNumber = NetField:subclass()
 netFieldNumber.__netencode = identity		-- concat as-is
 netFieldNumber.__netparse = function(p) return tonumber(p:next()) end
 
-local netFieldNumberOrNil = class(NetField)
+local netFieldNumberOrNil = NetField:subclass()
 netFieldNumberOrNil.__netencode = function(s) 
 	if s then return tostring(s) end
 	return ''
@@ -141,11 +141,11 @@ netFieldNumberOrNil.__netparse = function(p)
 	if s ~= '' then return tonumber(s) end
 end
 
-local netFieldString = class(NetField)
+local netFieldString = NetField:subclass()
 netFieldString.__netencode = netescape		-- concat as-is
 netFieldString.__netparse = function(p) return netunescape(p:next()) end		-- return the next token as-is
 
-local netFieldStringOrNil = class(NetField)
+local netFieldStringOrNil = NetField:subclass()
 netFieldStringOrNil.__netencode = function(s)
 	if s then return netescape(s) end
 	return ''
