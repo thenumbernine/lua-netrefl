@@ -53,8 +53,10 @@ local function notEquals(a,b) return a ~= b end	-- typical 'compare's are equals
 
 -- TODO - AST, inlining, and regen and cache flattened functions
 local function netSendObj(socket, prefix, thisObj, lastObj)
+--DEBUG(netrefl.netSendObj):print('netSendObj', socket, prefix, thisObj, lastObj)
 	if not thisObj.__netfields then error("prefix "..prefix.." had no __netfields") end
 	for fieldName, info in pairs(thisObj.__netfields) do
+--DEBUG(netrefl.netSendObj):print('netSendObj', fieldName, info)
 		info:__netsend(socket, prefix, fieldName, thisObj, lastObj, thisObj[fieldName])
 	end
 end

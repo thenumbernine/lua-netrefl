@@ -100,6 +100,7 @@ local clientlistenReportSecond = 0
 
 -- coroutine
 function RemoteClientConn:listenCoroutine()
+--DEBUG:print('RemoteClientConn:listenCoroutine')
 	coroutine.yield()
 
 	local netcom = self.netcom
@@ -122,7 +123,7 @@ function RemoteClientConn:listenCoroutine()
 
 	
 --[[ clientlisten loop fps counter
-			local clientlistenStart = sdl.SDL_GetTicks() / 1000
+			local clientlistenStart = getTime() / 1000
 --]]	
 		
 			repeat
@@ -145,6 +146,7 @@ function RemoteClientConn:listenCoroutine()
 						if cmd then
 							local entry = netcom.serverToClientObjects[cmd]
 							if entry then
+--DEBUG:print('RemoteClientConn:listenCoroutine netcom.serverToClientObjects got object', cmd)
 								netReceiveObj(parser, parser:next(), netcom.serverToClientObjects[cmd].object)
 							else
 								-- TODO this all parallels serverconn except ...
@@ -183,7 +185,7 @@ function RemoteClientConn:listenCoroutine()
 			until not data
 			
 --[[ clientlisten loop fps counter
-			local clientlistenEnd = sdl.SDL_GetTicks() / 1000
+			local clientlistenEnd = getTime() / 1000
 			clientlistenTotalTime = clientlistenTotalTime + clientlistenEnd - clientlistenStart
 			clientlistenTotalFrames = clientlistenTotalFrames + 1
 			local thissec = math.floor(clientlistenEnd)
@@ -200,6 +202,7 @@ function RemoteClientConn:listenCoroutine()
 end
 
 function RemoteClientConn:sendCoroutine()
+--DEBUG:print('RemoteClientConn:sendCoroutine')
 	coroutine.yield()
 	
 	local netcom = self.netcom
@@ -213,6 +216,7 @@ function RemoteClientConn:sendCoroutine()
 	and self.socket:getsockname()
 	do
 		for name,entry in ipairs(netcom.clientToServerObjects) do
+--DEBUG:print('RemoteClientConn:sendCoroutine netSendObj', name, entry)			
 			netSendObj(self.socket, name, entry.object, objectLastStates[name])
 		end
 		

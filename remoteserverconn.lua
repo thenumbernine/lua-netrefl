@@ -136,23 +136,26 @@ local serversendReportSecond = 0
 --]]
 
 function RemoteServerConn:sendCoroutine()
+--DEBUG:print('RemoteServerConn:sendCoroutine BEGIN')
 	coroutine.yield()
 
 	local netcom = self.server.netcom
 
 	local objectLastStates = {}
 	for name,entry in pairs(netcom.serverToClientObjects) do
+--DEBUG:print('RemoteServerConn:sendCoroutine init objectLastStates', name, entry)
 		objectLastStates[name] = {}
 	end
 
 	while self.server
 	and self.server.socket:getsockname()		-- while we're alive
 	do
+--DEBUG:print('RemoteServerConn:sendCoroutine in event loop')
 --[[ serversend loop fps counter
-		local serversendStart = sdl.SDL_GetTicks() / 1000
+		local serversendStart = getTime() / 1000
 --]]
 
-		for name,entry in ipairs(netcom.serverToClientObjects) do
+		for name,entry in pairs(netcom.serverToClientObjects) do
 			netSendObj(self.socket, name, entry.object, objectLastStates[name])
 		end
 		
@@ -160,7 +163,7 @@ function RemoteServerConn:sendCoroutine()
 		self.hasSentUpdate = true
 		
 --[[ serversend loop fps counter
-		local serversendEnd = sdl.SDL_GetTicks() / 1000
+		local serversendEnd = getTime() / 1000
 		serversendTotalTime = serversendTotalTime + serversendEnd - serversendStart
 		serversendTotalFrames = serversendTotalFrames + 1
 		local thissec = math.floor(serversendEnd)
@@ -174,6 +177,8 @@ function RemoteServerConn:sendCoroutine()
 		
 		coroutine.yield()
 	end
+
+--DEBUG:print('RemoteServerConn:sendCoroutine END')
 end
 
 function RemoteServerConn:netcall(args)
