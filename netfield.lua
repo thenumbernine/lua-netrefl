@@ -5,10 +5,10 @@ netfield format:
 	-- string concat encode, string decode
 	-- I'm thinking of cutting this out and forcing fields to state 'tostring' ...
 	[fieldname] = true,
-	
+
 	-- string concat encode, function decode
 	[fieldname] = function() ... end,
-	
+
 	-- explicit encode/decode functions
 	[fieldname] = {
 		__netencode=function(data) return a parsable string based on data end,
@@ -16,7 +16,7 @@ netfield format:
 		__netdiff=function(last,this) return true or false based on data end,
 		__netcopy(this,last) return a copy of this, cached in last if it is non-null end,
 	}
-	
+
 	...
 }
 
@@ -63,14 +63,14 @@ end
 
 local function netReceiveObj(parser, field, obj)
 	local info = obj.__netfields[field]
-	
+
 	-- we still have some object commands that don't apply to netfields
 	-- TODO - map them all? and assert this? maybe? that might strain the encoder (skipping certain fields)
 	if info == nil then
 		print('ignoring field '..field..' for data '..parser.data)
 		return
 	end
-	
+
 	obj[field] = info.__netparse(parser, obj[field], obj)
 	return true
 end
@@ -82,7 +82,7 @@ local NetField = class{
 	__netparse = function(p) return p:next() end,
 	__netdiff = notEquals,
 	__netcopy = identity,
-	
+
 	-- what brings it all together:
 	__netsend = function(self, socket, prefix, field, thisObj, lastObj, thisValue)
 		assert(lastObj, debug.traceback())
@@ -139,7 +139,7 @@ netFieldNumber.__netparse = function(p)
 end
 
 local netFieldNumberOrNil = NetField:subclass()
-netFieldNumberOrNil.__netencode = function(s) 
+netFieldNumberOrNil.__netencode = function(s)
 	if s then return tostring(s) end
 	return ''
 end
@@ -202,13 +202,13 @@ local function netFieldList(netField)
 			end
 			return lastValue
 		end,
-		
+
 		-- DONE, now just add in a __netreceive and have it encapsulate __netparse
 		__netsend = function(self, socket, prefix, field, thisObj, lastObj, thisValue)
-		
+
 			-- something in here is running twice as slow as the inline code in the unit send block ...
 			-- even calling this and immediately returning still runs as fast
-		
+
 			local lastValue = lastObj[field]
 			if not lastValue then
 				lastValue = {}
@@ -219,19 +219,19 @@ local function netFieldList(netField)
 				socket:send(prefix..' '..field..' # '..#thisValue..'\n')
 				resizeArrayWithValue(lastValue, #thisValue, nil)
 			end
-			
+
 			--do return end
 			-- this code is whats running at half the speed:
 			-- in the inline code it just calls encodeSpell()
 			-- but here it's gotta route all the way through the netsend / netreceive
 
-			-- a big chunk of the lost time was this append being in the array ... 
+			-- a big chunk of the lost time was this append being in the array ...
 			-- 240fps without any of this, 170fps with the concat outside the loop, 140fps with the concat inside...
 			local elemPrefix = prefix..' '..field
 
 			for index,thisElem in ipairs(thisValue) do	-- for = is 165fps, for in is 150fps
 				-- the non-inline has to send the value separately
-				-- while the inline doesn't 
+				-- while the inline doesn't
 				-- maybe if __netsend sent the value across as well?  one less dereference...
 				netField:__netsend(socket, elemPrefix, index, thisValue, lastValue, thisElem)
 			end

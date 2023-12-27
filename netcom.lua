@@ -139,6 +139,7 @@ function NetCom:start(args)
 			addr = addr,
 			port = port,
 			success = function(clconn)
+				-- THIS ISN'T GETTING ASSIGNED OR RETURNED ...		
 				clientConn = clconn
 				if args.onConnect then args.onConnect(clconn) end
 			end
