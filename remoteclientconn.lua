@@ -242,7 +242,8 @@ function RemoteClientConn:netcall(args)
 	self.remoteQuery:query(
 		self.socket,
 		function(parser)
-			assert(parser:next() == name) -- hmm ...
+			local funcName = parser:next()
+--DEBUG:assert(funcName == name, "expected "..tostring(name).." got "..tostring(funcName))
 --DEBUG:print("RemoteClientConn:netcall query parser", parser.data)
 --DEBUG:print("RemoteClientConn:netcall #call.returnArgs", #call.returnArgs)
 			local returnArgs = netcom:decode(parser, self, name, call.returnArgs)
