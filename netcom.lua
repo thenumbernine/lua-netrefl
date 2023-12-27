@@ -283,7 +283,7 @@ function NetCom:netcall_local(conn, otherConn, directory, args)
 	local name = table.remove(args, 1)
 	local call = assert(directory[name], "couldn't find xfer function "..name)
 	if call.preFunc then
-		call.preFunc(conn, unpack(args, 1, #call.args))
+		call.preFunc(conn, table.unpack(args, 1, #call.args))
 	end
 	-- call the function directly, passing the clientconn first to identify where the call came from
 	-- if .useDone is set then the called function is responsible for calling 'done' in the end (and is assumed to returned nothing)
@@ -293,20 +293,20 @@ function NetCom:netcall_local(conn, otherConn, directory, args)
 				args.done(...)
 			end
 			if call.postFunc then
-				call.postFunc(conn, unpack(args, 1, #call.args))
+				call.postFunc(conn, table.unpack(args, 1, #call.args))
 			end
 		end
-		call.func(otherConn, unpack(args, 1, #call.args + 1))
+		call.func(otherConn, table.unpack(args, 1, #call.args + 1))
 	else
-		local returnArgs = {call.func(otherConn, unpack(args, 1, #call.args))}
+		local returnArgs = {call.func(otherConn, table.unpack(args, 1, #call.args))}
 		if args.done then
-			args.done(unpack(returnArgs, 1, #call.returnArgs))
+			args.done(table.unpack(returnArgs, 1, #call.returnArgs))
 		end
 		if call.postFunc then
 			for i=1,#call.returnArgs do
 				args[#call.args + i] = returnArgs[i]
 			end
-			call.postFunc(conn, unpack(args, 1, #call.args + #call.returnArgs))
+			call.postFunc(conn, table.unpack(args, 1, #call.args + #call.returnArgs))
 		end
 	end
 end

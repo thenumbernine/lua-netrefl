@@ -1,6 +1,6 @@
+local table = require 'ext.table'
 local ast = require 'parser.ast'
 local NetField = require 'netrefl.netfield'.NetField
-
 local vec2 = require 'vec.vec2'
 local vec3 = require 'vec.vec3'
 local vec4 = require 'vec.vec4'
@@ -35,7 +35,7 @@ for dim=2,4 do
 			netclassname..'.__netencode',
 			{ast._arg()},
 			ast._return(
-				ast._concat(unpack(exprs))
+				ast._concat(table.unpack(exprs))
 		))
 		ast.exec(nc.func__netencode, nil, nil, env)()
 	end
@@ -50,7 +50,7 @@ for dim=2,4 do
 			{ast._arg()},
 			ast._return(
 				ast._call(classname,
-					unpack(exprs)
+					table.unpack(exprs)
 		)))
 		ast.exec(nc.func__netparse, nil, nil, env)()
 	end
@@ -72,7 +72,7 @@ for dim=2,4 do
 		nc.func__netcopy = ast._function(
 			netclassname..'.__netcopy',
 			{ast._arg(),ast._arg()},	-- src, body
-			unpack(stmts)
+			table.unpack(stmts)
 		)
 		ast.exec(nc.func__netcopy, nil, nil, env)()
 	end

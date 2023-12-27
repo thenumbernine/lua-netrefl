@@ -1,5 +1,6 @@
 --require 'netrefl.netfield'
 --require 'netrefl.netfield_vec'
+local table = require 'ext.table'
 local receiveBlocking = require 'netrefl.receiveblocking'
 local ServerConn = require 'netrefl.serverconn'
 local WordParser = require 'netrefl.wordparser'
@@ -102,9 +103,9 @@ function RemoteServerConn:listenCoroutine()
 											self.socket:send('<'..m..' '..response..'\n')
 										end									
 									end
-									call.func(self, unpack(args, 1, #call.args + 1))
+									call.func(self, table.unpack(args, 1, #call.args + 1))
 								else
-									local ret = {call.func(self, unpack(args, 1, #call.args))}
+									local ret = {call.func(self, table.unpack(args, 1, #call.args))}
 									if m then	-- looking for a response...
 										waitFor(self, 'hasSentUpdate')
 										local response = netcom:encode(self, name, call.returnArgs, ret)
@@ -182,7 +183,7 @@ function RemoteServerConn:netcall(args)
 		local name = table.remove(args, 1)
 		local call = assert(netcom.serverToClientCalls[name], "couldn't find xfer function "..tostring(name))
 		if call.preFunc then
-			call.preFunc(self, unpack(args, 1, #call.args))
+			call.preFunc(self, table.unpack(args, 1, #call.args))
 		end
 		self.remoteQuery:query(
 			self.socket,
@@ -190,13 +191,13 @@ function RemoteServerConn:netcall(args)
 				local returnArgs = netcom:decode(parser, self, name, call.returnArgs)
 				-- TODO decode return args
 				if args.done then
-					args.done(unpack(returnArgs, 1, #call.returnArgs))
+					args.done(table.unpack(returnArgs, 1, #call.returnArgs))
 				end
 				if call.postFunc then
 					for i=1,#call.returnArgs do
 						args[#call.args + i] = returnArgs[i]
 					end
-					call.postFunc(self, unpack(args, 1, #call.args + #call.returnArgs))
+					call.postFunc(self, table.unpack(args, 1, #call.args + #call.returnArgs))
 				end
 			end,
 			netcom:encode(self, name, call.args, args)
