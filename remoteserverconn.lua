@@ -150,7 +150,6 @@ function RemoteServerConn:sendCoroutine()
 	while self.server
 	and self.server.socket:getsockname()		-- while we're alive
 	do
---DEBUG:print('RemoteServerConn:sendCoroutine in event loop')
 --[[ serversend loop fps counter
 		local serversendStart = getTime() / 1000
 --]]
