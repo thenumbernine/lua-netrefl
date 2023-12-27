@@ -256,14 +256,18 @@ returns an array of values to be used for args
 --]]
 function NetCom:decode(parser, conn, name, callArgs)
 	local args = {}
+--DEBUG:print("NetCom:decode", parser, conn, name, callArgs)	
 	for i,callArg in ipairs(callArgs) do
 		if callArg.__netparse then
+--DEBUG:print("NetCom:decode arg["..i.."] using __netparse")	
 			args[i] = callArg.__netparse(parser)
 		elseif callArg.connParse then
+--DEBUG:print("NetCom:decode arg["..i.."] using connParse")	
 			args[i] = callArg.connParse(conn, parser)
 		else
 			error("don't know how to decode param "..i.." of function "..name)
 		end
+--DEBUG:print("NetCom:decode arg["..i.."] = ", args[i])	
 	end
 	return args
 end

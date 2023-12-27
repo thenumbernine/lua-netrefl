@@ -129,7 +129,12 @@ netFieldBoolean.__netparse = function(p) return p:next() == 'true' end
 
 local netFieldNumber = NetField:subclass()
 netFieldNumber.__netencode = identity		-- concat as-is
-netFieldNumber.__netparse = function(p) return tonumber(p:next()) end
+netFieldNumber.__netparse = function(p)
+	local data = p:next()
+	local number = tonumber(data)
+--DEBUG:print("netFieldNumber.__netparse p:next()="..tostring(data).." tonumber="..tostring(number))
+	return number
+end
 
 local netFieldNumberOrNil = NetField:subclass()
 netFieldNumberOrNil.__netencode = function(s) 

@@ -93,9 +93,9 @@ function Server:connectLocal(onConnect)
 	local serverConn = LocalServerConn(self)
 	self.localConn = serverConn
 
+	self.serverConns:insert(serverConn)
 	onConnect(serverConn.clientConn)
 
-	self.serverConns:insert(serverConn)
 	return serverConn
 end
 
