@@ -1,5 +1,6 @@
 --require 'netrefl.netfield'
 --require 'netrefl.netfield_vec'
+local receiveBlocking = require 'netrefl.receiveblocking'
 local ServerConn = require 'netrefl.serverconn'
 local WordParser = require 'netrefl.wordparser'
 local RemoteQuery = require 'netrefl.remotequery'
@@ -27,7 +28,7 @@ end
 function RemoteServerConn:isActive()
 	local active = coroutine.status(self.listenThread) ~= 'dead'
 		and coroutine.status(self.sendThread) ~= 'dead'
---DEBUG:print('RemoteServerConn:isActive()', active)
+----DEBUG:print('RemoteServerConn:isActive()', active)
 	return active
 end
 

@@ -2,7 +2,7 @@ local receiveBlocking = require 'netrefl.receiveblocking'
 local class = require 'ext.class'
 local table = require 'ext.table'
 local LocalServerConn = require 'netrefl.localserverconn'
-local RemoteServerConn = require 'netrefl.localserverconn'
+local RemoteServerConn = require 'netrefl.remoteserverconn'
 --require 'netrefl.netfield'
 local ThreadManager = require 'threadmanager'
 local err, socket = pcall(require, 'socket')
@@ -38,6 +38,7 @@ args:
 	threads = (optional) ThreadManager
 --]]
 function Server:init(args)
+--DEBUG:print('Server:init', args)		
 	self.netcom = assert(args.netcom)
 	self.serverConns = table()
 	self.threads = args.threads
@@ -49,6 +50,7 @@ function Server:init(args)
 	if socket then -- init net listen
 		self.socket = assert(socket.bind('localhost', args.listenport or 12345))
 		self.socketaddr, self.socketport = self.socket:getsockname()
+--DEBUG:print('Server:init socketaddr',self.socketaddr, 'socketport', self.socketport)
 		self.socket:settimeout(0, 'b')
 	end
 end
@@ -63,6 +65,7 @@ function Server:update()
 	end
 	
 	-- now handle connections
+----DEBUG:print(require 'ext.timer'.getTime(), 'Server:update #serverConns', #self.serverConns)	
 	for i=#self.serverConns,1,-1 do
 		local serverConn = self.serverConns[i]
 		if not serverConn:isActive() then
