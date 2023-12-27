@@ -202,7 +202,7 @@ function RemoteClientConn:listenCoroutine()
 end
 
 function RemoteClientConn:sendCoroutine()
---DEBUG:print('RemoteClientConn:sendCoroutine')
+--DEBUG:print('RemoteClientConn:sendCoroutine BEGIN')
 	coroutine.yield()
 	
 	local netcom = self.netcom
@@ -215,8 +215,7 @@ function RemoteClientConn:sendCoroutine()
 	while self.socket
 	and self.socket:getsockname()
 	do
-		for name,entry in ipairs(netcom.clientToServerObjects) do
---DEBUG:print('RemoteClientConn:sendCoroutine netSendObj', name, entry)			
+		for name,entry in pairs(netcom.clientToServerObjects) do
 			netSendObj(self.socket, name, entry.object, objectLastStates[name])
 		end
 		
@@ -224,6 +223,8 @@ function RemoteClientConn:sendCoroutine()
 		
 		coroutine.yield()
 	end
+
+--DEBUG:print('RemoteClientConn:sendCoroutine END')
 end
 
 --[[
