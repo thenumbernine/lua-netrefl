@@ -50,16 +50,16 @@ end
 
 local function createFieldOrNil(netfield)
 	assert(netfield)
-	return {
-		__netencode = function(v)
-			if v == nil then return 'false' end
-			return 'true '..netfield.__netencode(v)
-		end,
-		__netparse = function(parser)
-			if parser:next() ~= 'true' then return nil end
-			return netfield.__netparse(parser)
-		end,
-	}
+	local subclass = netfield:subclass()
+	subclass.__netencode = function(v)
+		if v == nil then return 'false' end
+		return 'true '..netfield.__netencode(v)
+	end
+	subclass.__netparse = function(parser)
+		if parser:next() ~= 'true' then return nil end
+		return netfield.__netparse(parser)
+	end
+	return subclass
 end
 
 return {
