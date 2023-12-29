@@ -100,11 +100,11 @@ local NetFieldObject = class()
 -- common __netsend for objects, especially members of arrays...
 -- should this be a method of list, or of its members?  probably an allocator of its members?
 function NetFieldObject.__netsend(self, socket, prefix, field, thisObj, lastObj, thisValue)
---DEBUG:print('NetFieldObject __netsend prefix='..prefix..' field='..field..' thisObj='..tostring(thisObj)..' lastObj='..tostring(lastObj)..' thisValue='..tostring(thisValue))
---DEBUG:assert(thisValue, "...thisValue is nil")
+--DEBUG(netrefl):print('NetFieldObject __netsend prefix='..prefix..' field='..field..' thisObj='..tostring(thisObj)..' lastObj='..tostring(lastObj)..' thisValue='..tostring(thisValue))
+--DEBUG(netrefl):assert(thisValue, "...thisValue is nil")
 	local lastValue = lastObj[field]
 	if not lastValue then
---DEBUG:print('...creating lastValue={}')
+--DEBUG(netrefl):print('...creating lastValue={}')
 		lastValue = {}
 		lastObj[field] = lastValue
 	end
@@ -136,7 +136,7 @@ netFieldNumber.__netencode = identity		-- concat as-is
 netFieldNumber.__netparse = function(p)
 	local data = p:next()
 	local number = tonumber(data)
---DEBUG:print("netFieldNumber.__netparse p:next()="..tostring(data).." tonumber="..tostring(number))
+--DEBUG(netrefl):print("netFieldNumber.__netparse p:next()="..tostring(data).." tonumber="..tostring(number))
 	return number
 end
 
@@ -190,7 +190,7 @@ local function netFieldList(netField)
 	return {
 		__netparse = function(parser, lastValue, thisObj)
 			if not lastValue then
---DEBUG:print('netFieldList __netparse creating lastValue={}')
+--DEBUG(netrefl):print('netFieldList __netparse creating lastValue={}')
 				lastValue = {}
 			end
 			if parser.token == '' then error('got here') end
@@ -216,7 +216,7 @@ local function netFieldList(netField)
 
 			local lastValue = lastObj[field]
 			if not lastValue then
---DEBUG:print('netFieldList __netsend prefix='..prefix..' field='..field..' creating lastValue={}')
+--DEBUG(netrefl):print('netFieldList __netsend prefix='..prefix..' field='..field..' creating lastValue={}')
 				lastValue = {}
 				lastObj[field] = lastValue
 			end

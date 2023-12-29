@@ -24,21 +24,21 @@ local RemoteClientConn = ClientConn:subclass()
 args:
 	netcom = NetCom
 	threads = (optional) thread manager
-	
+
 all client conns need a netcall object
 local ones can get them from their server
 --]]
 function RemoteClientConn:init(args)
---DEBUG:print('RemoteClientConn:init', args)
+--DEBUG(netrefl):print('RemoteClientConn:init', args)
 	RemoteClientConn.super.init(self)
-	
+
 	self.netcom = assert(args.netcom)
 	self.threads = args.threads
 	if not self.threads then
 		self.threads = ThreadManager()
 		self.ownThreads = true
 	end
-	
+
 	self.remoteQuery = RemoteQuery()
 end
 
@@ -49,8 +49,8 @@ args:
 	fail (not yet used)
 	success
 --]]
-function RemoteClientConn:connect(args)	
---DEBUG:print('RemoteClientConn:connect addr',args.addr,'port',args.port)
+function RemoteClientConn:connect(args)
+--DEBUG(netrefl):print('RemoteClientConn:connect addr',args.addr,'port',args.port)
 	local sock, reason = socket.connect(args.addr, args.port)
 	if not sock then
 		print('failed to connect: '..tostring(reason))
@@ -60,7 +60,7 @@ function RemoteClientConn:connect(args)
 	sock:settimeout(0, 'b')
 	self.connecting = true
 
-	-- handshaking ...	
+	-- handshaking ...
 	self.threads:add(function()
 		sock:send('litagano\n')
 
@@ -68,14 +68,14 @@ function RemoteClientConn:connect(args)
 		local recv = receiveBlocking(sock, 10)
 		if not recv then error("RemoteClientConn waiting for handshake failed with error "..tostring(reason)) end
 		assert(recv == expect, "RemoteClientConn handshake failed.  expected "..expect..' but got '..tostring(recv))
-		
+
 		self.connecting = nil
 		self.connected = true
 
 		-- TODO - onfailure?  and a pcall please ... one the coroutines won't mind ...
 		if args.success then args.success(self) end
-		
-		-- now spawn off a listening thread 
+
+		-- now spawn off a listening thread
 		-- that will spend most its time blocking
 		-- and will interpret messages for us
 		self.listenThread = self.threads:add(self.listenCoroutine, self)
@@ -85,7 +85,7 @@ end
 
 function RemoteClientConn:update()
 	RemoteClientConn.super.update(self)
-	
+
 	if self.ownThreads then
 		self.threads:update()
 	end
@@ -100,14 +100,14 @@ local clientlistenReportSecond = 0
 
 -- coroutine
 function RemoteClientConn:listenCoroutine()
---DEBUG:print('RemoteClientConn:listenCoroutine')
+--DEBUG(netrefl):print('RemoteClientConn:listenCoroutine')
 	coroutine.yield()
 
 	local netcom = self.netcom
-	
+
 	local parser = WordParser()
 	local result = {}
-	
+
 	while self.socket
 	and self.socket:getsockname()
 	do
@@ -121,13 +121,13 @@ function RemoteClientConn:listenCoroutine()
 			end
 		else
 
-	
+
 --[[ clientlisten loop fps counter
 			local clientlistenStart = getTime() / 1000
---]]	
-		
+--]]
+
 			repeat
---DEBUG:print("RemoteClientConn:listenCoroutine got data", data)
+--DEBUG(netrefl):print("RemoteClientConn:listenCoroutine got data", data)
 				parser:setstr(data)
 
 				if #data > 0 then
@@ -136,17 +136,17 @@ function RemoteClientConn:listenCoroutine()
 					if cmd:sub(1,1) == '<' then		-- < means response.  > means request, means we'd have to reply ...
 						self.remoteQuery:processResponse(cmd, parser)
 					else
-					
+
 						-- requesting a response
 						if cmd:sub(1,1) == '>' then
 							m = cmd:sub(2)
 							cmd = parser:next()
 						end
-					
+
 						if cmd then
 							local entry = netcom.serverToClientObjects[cmd]
 							if entry then
---DEBUG:print('RemoteClientConn:listenCoroutine netcom.serverToClientObjects got object', cmd)
+--DEBUG(netrefl):print('RemoteClientConn:listenCoroutine netcom.serverToClientObjects got object', cmd)
 								netReceiveObj(parser, parser:next(), netcom.serverToClientObjects[cmd].object)
 							else
 								-- TODO this all parallels serverconn except ...
@@ -162,7 +162,7 @@ function RemoteClientConn:listenCoroutine()
 												--waitFor(self, 'hasSentUpdate')
 												local response = netcom:encode(self, name, call.returnArgs, ret)
 												self.socket:send('<'..m..' '..response..'\n')
-											end									
+											end
 										end
 										call.func(self, table.unpack(args, 1, #call.args + 1))
 									else
@@ -183,7 +183,7 @@ function RemoteClientConn:listenCoroutine()
 				-- read as much as we want at once
 				data = self.socket:receive('*l')
 			until not data
-			
+
 --[[ clientlisten loop fps counter
 			local clientlistenEnd = getTime() / 1000
 			clientlistenTotalTime = clientlistenTotalTime + clientlistenEnd - clientlistenStart
@@ -196,36 +196,36 @@ function RemoteClientConn:listenCoroutine()
 				clientlistenTotalFrames = 0
 			end
 --]]
-			
+
 		end
 	end
 end
 
 function RemoteClientConn:sendCoroutine()
---DEBUG:print('RemoteClientConn:sendCoroutine BEGIN')
+--DEBUG(netrefl):print('RemoteClientConn:sendCoroutine BEGIN')
 	coroutine.yield()
-	
+
 	local netcom = self.netcom
-	
+
 	local objectLastStates = {}
 	self.objectLastStates = objectLastStates
 	for name,entry in pairs(netcom.clientToServerObjects) do
 		objectLastStates[name] = {}
 	end
-	
+
 	while self.socket
 	and self.socket:getsockname()
 	do
 		for name,entry in pairs(netcom.clientToServerObjects) do
 			netSendObj(self.socket, name, entry.object, objectLastStates[name])
 		end
-		
+
 		self.hasSentUpdate = true
-		
+
 		coroutine.yield()
 	end
 
---DEBUG:print('RemoteClientConn:sendCoroutine END')
+--DEBUG(netrefl):print('RemoteClientConn:sendCoroutine END')
 end
 
 --[[
@@ -233,7 +233,7 @@ args:
 	1st = function name
 	rest = function args
 	done = callback to call upon response with the function results passed as arguments
-	
+
 RemoteServerConn is the same except
 * clientToServerCalls is replaced with serverToClientCalls
 * runs on a separate thread prefixed with a waitFor()
@@ -249,11 +249,11 @@ function RemoteClientConn:netcall(args)
 		self.socket,
 		function(parser)
 			local funcName = parser:next()
---DEBUG:assert(funcName == name, "expected "..tostring(name).." got "..tostring(funcName))
---DEBUG:print("RemoteClientConn:netcall query parser", parser.data)
---DEBUG:print("RemoteClientConn:netcall #call.returnArgs", #call.returnArgs)
+--DEBUG(netrefl):assert(funcName == name, "expected "..tostring(name).." got "..tostring(funcName))
+--DEBUG(netrefl):print("RemoteClientConn:netcall query parser", parser.data)
+--DEBUG(netrefl):print("RemoteClientConn:netcall #call.returnArgs", #call.returnArgs)
 			local returnArgs = netcom:decode(parser, self, name, call.returnArgs)
---DEBUG:print("RemoteClientConn:netcall returnArgs", table.unpack(returnArgs))			
+--DEBUG(netrefl):print("RemoteClientConn:netcall returnArgs", table.unpack(returnArgs))
 			if args.done then
 				args.done(table.unpack(returnArgs, 1, #call.returnArgs))
 			end
