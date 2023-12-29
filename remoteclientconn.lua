@@ -208,6 +208,7 @@ function RemoteClientConn:sendCoroutine()
 	local netcom = self.netcom
 	
 	local objectLastStates = {}
+	self.objectLastStates = objectLastStates
 	for name,entry in pairs(netcom.clientToServerObjects) do
 		objectLastStates[name] = {}
 	end

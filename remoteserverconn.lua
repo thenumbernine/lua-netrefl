@@ -142,6 +142,7 @@ function RemoteServerConn:sendCoroutine()
 	local netcom = self.server.netcom
 
 	local objectLastStates = {}
+	self.objectLastStates = objectLastStates
 	for name,entry in pairs(netcom.serverToClientObjects) do
 --DEBUG:print('RemoteServerConn:sendCoroutine init objectLastStates', name, entry)
 		objectLastStates[name] = {}
