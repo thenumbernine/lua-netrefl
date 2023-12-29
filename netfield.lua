@@ -85,7 +85,7 @@ local NetField = class{
 
 	-- what brings it all together:
 	__netsend = function(self, socket, prefix, field, thisObj, lastObj, thisValue)
-		assert(lastObj, debug.traceback())
+		assert(lastObj)
 		local lastValue = lastObj[field]
 		if self.__netdiff(lastValue, thisValue) then
 			lastObj[field] = self.__netcopy(thisValue, lastValue)		-- reuse if you can
@@ -105,18 +105,17 @@ function NetFieldObject.__netsend(self, socket, prefix, field, thisObj, lastObj,
 		lastValue = {}
 		lastObj[field] = lastValue
 	end
-	assert(lastValue, debug.traceback())
+	assert(lastValue)
 	netSendObj(socket, prefix..' '..field, thisValue, lastValue)
 end
 
 function NetFieldObject.__netparse(parser, lastValue, thisObj)
 	assert(parser.token,
 		"field expected a token but got "..tostring(parser.token)..
-		" for data "..parser.data..
-		"with trace "..debug.traceback())
+		" for data "..parser.data)
 
 	local field = parser:next()
-	assert(lastValue, "applying an obj field to an obj we haven't recieved yet\ndata:"..parser.data.."\ntraceback:"..debug.traceback())
+	assert(lastValue, "applying an obj field to an obj we haven't recieved yet\ndata:"..parser.data)
 
 	if not netReceiveObj(parser, field, lastValue) then
 		error('unable to parse field '..tostring(field)..' in line '..parser.data)
@@ -168,7 +167,7 @@ end
 -- n = how many
 -- a = allocator function to fill extras
 local function resizeArrayWithAllocator(t, n, a, ...)
-	assert(t, debug.traceback())
+	assert(t)
 	local s = #t
 	for i=n+1,s do t[i] = nil end
 	for i=s+1,n do t[i] = a(...) end
