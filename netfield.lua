@@ -49,7 +49,6 @@ end
 -- some useful functions ...
 
 local function identity(x) return x end
-local function notEquals(a,b) return a ~= b end	-- typical 'compare's are equals, not notEquals...
 
 -- TODO - AST, inlining, and regen and cache flattened functions
 local function netSendObj(socket, prefix, thisObj, lastObj)
@@ -81,7 +80,7 @@ local NetField = class{
 	-- utility functions:
 	__netencode = tostring,
 	__netparse = function(p) return p:next() end,
-	__netdiff = notEquals,
+	__netdiff = require 'ext.op'.ne,
 	__netcopy = identity,
 
 	-- what brings it all together:
@@ -101,8 +100,11 @@ local NetFieldObject = class()
 -- common __netsend for objects, especially members of arrays...
 -- should this be a method of list, or of its members?  probably an allocator of its members?
 function NetFieldObject.__netsend(self, socket, prefix, field, thisObj, lastObj, thisValue)
+--DEBUG:print('NetFieldObject __netsend prefix='..prefix..' field='..field..' thisObj='..tostring(thisObj)..' lastObj='..tostring(lastObj)..' thisValue='..tostring(thisValue))
+--DEBUG:assert(thisValue, "...thisValue is nil")
 	local lastValue = lastObj[field]
 	if not lastValue then
+--DEBUG:print('...creating lastValue={}')
 		lastValue = {}
 		lastObj[field] = lastValue
 	end
@@ -187,7 +189,10 @@ local function netFieldList(netField)
 	assert(netField)
 	return {
 		__netparse = function(parser, lastValue, thisObj)
-			if not lastValue then lastValue = {} end
+			if not lastValue then
+--DEBUG:print('netFieldList __netparse creating lastValue={}')
+				lastValue = {}
+			end
 			if parser.token == '' then error('got here') end
 			if parser.token == '#' then
 				parser:next()
@@ -211,6 +216,7 @@ local function netFieldList(netField)
 
 			local lastValue = lastObj[field]
 			if not lastValue then
+--DEBUG:print('netFieldList __netsend prefix='..prefix..' field='..field..' creating lastValue={}')
 				lastValue = {}
 				lastObj[field] = lastValue
 			end
