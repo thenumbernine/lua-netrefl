@@ -183,7 +183,7 @@ args:
 	returnArgs = (optional) function return value encode/decode information
 	useDone = whether func calls done() itself
 --]]
-local function NetCom_addCall(self, field, callArgs)
+function NetCom:addCallForDir(field, callArgs)
 	assert(not self[field][name], "tried to add the same command twice to "..field)
 	self[field][assert(callArgs.name)] = {
 		name = assert(callArgs.name),
@@ -197,14 +197,14 @@ local function NetCom_addCall(self, field, callArgs)
 end
 
 function NetCom:addClientToServerCall(args)
-	NetCom_addCall(self, 'clientToServerCalls', args)
+	self:addCallForDir('clientToServerCalls', args)
 end
 
 function NetCom:addServerToClientCall(args)
-	NetCom_addCall(self, 'serverToClientCalls', args)
+	self:addCallForDir('serverToClientCalls', args)
 end
 
-local function NetCom_addObject(self, field, objArgs)
+function NetCom:addObjectForDir(field, objArgs)
 	self[field][assert(objArgs.name)] = {
 		name = assert(objArgs.name),
 		object = assert(objArgs.object),
@@ -212,8 +212,8 @@ local function NetCom_addObject(self, field, objArgs)
 end
 
 function NetCom:addObject(args)
-	NetCom_addObject(self, 'serverToClientObjects', args)
-	NetCom_addObject(self, 'clientToServerObjects', args)
+	self:addObjectForDir('serverToClientObjects', args)
+	self:addObjectForDir('clientToServerObjects', args)
 end
 
 -- below are all helper static functions
