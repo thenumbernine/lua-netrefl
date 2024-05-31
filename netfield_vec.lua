@@ -1,5 +1,5 @@
 local table = require 'ext.table'
-local ast = require 'parser.ast'
+local ast = require 'parser.lua.ast'
 local NetField = require 'netrefl.netfield'.NetField
 local vec2 = require 'vec.vec2'
 local vec3 = require 'vec.vec3'
