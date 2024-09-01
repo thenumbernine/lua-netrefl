@@ -24,33 +24,35 @@ for dim=2,4 do
 	env[netclassname] = nc
 
 	do
-		local exprs = {}
+		local exprs = table()
 		for i=1,dim do
 			if i > 1 then
-				table.insert(exprs, ast._string(' '))
+				exprs:insert(ast._string(' '))
 			end
-			table.insert(exprs, ast._index(ast._arg(1), i))
+			exprs:insert(ast._index(ast._arg(1), ast._number(i)))
 		end
 		nc.func__netencode = ast._function(
-			netclassname..'.__netencode',
+			ast._index(ast._var(netclassname), ast._string'__netencode'),
 			{ast._arg()},
 			ast._return(
-				ast._concat(table.unpack(exprs))
+				ast._concat(exprs:unpack())
 		))
 		ast.exec(nc.func__netencode, nil, nil, env)()
 	end
 
 	do
-		local exprs = {}
+		local exprs = table()
 		for i=1,dim do
-			table.insert(exprs, ast._call('arg1:next'))
+			exprs:insert(ast._call(
+				ast._indexself(ast._var'arg1', 'next')
+			))
 		end
 		nc.func__netparse = ast._function(
-			netclassname..'.__netparse',
+			ast._index(ast._var(netclassname), ast._string'__netparse'),
 			{ast._arg()},
 			ast._return(
-				ast._call(classname,
-					table.unpack(exprs)
+				ast._call(ast._var(classname),
+					exprs:unpack()
 		)))
 		ast.exec(nc.func__netparse, nil, nil, env)()
 	end
@@ -59,18 +61,18 @@ for dim=2,4 do
 		local stmts = {}
 		table.insert(stmts, ast._if(
 			ast._not(ast._arg(2)),
-			ast._assign({ast._arg(2)}, {ast._call(classname)})
+			ast._assign({ast._arg(2)}, {ast._call(ast._var(classname))})
 		))
 		for i=1,dim do
 			table.insert(stmts, 
 				ast._assign(
-					{ast._index(ast._arg(2),i)},
-					{ast._index(ast._arg(1),i)}
+					{ast._index(ast._arg(2), ast._number(i))},
+					{ast._index(ast._arg(1), ast._number(i))}
 			))
 		end
 		table.insert(stmts, ast._return(ast._arg(2)))
 		nc.func__netcopy = ast._function(
-			netclassname..'.__netcopy',
+			ast._index(ast._var(netclassname), ast._string'__netcopy'),
 			{ast._arg(),ast._arg()},	-- src, body
 			table.unpack(stmts)
 		)
