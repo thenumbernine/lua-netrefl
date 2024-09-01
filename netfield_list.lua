@@ -48,9 +48,14 @@ local function createConnFieldList(connfield)
 	}
 end
 
+local class = require 'ext.class'
 local function createFieldOrNil(netfield)
 	assert(netfield)
-	local subclass = netfield:subclass()
+	-- should createNetFieldList and createConnFieldList return classes?
+	-- or should this?
+	-- because their contents get passed here
+	--local subclass = netfield:subclass()
+	local subclass = class(netfield)
 	subclass.__netencode = function(v)
 		if v == nil then return 'false' end
 		return 'true '..netfield.__netencode(v)
