@@ -29,7 +29,7 @@ all client conns need a netcall object
 local ones can get them from their server
 --]]
 function RemoteClientConn:init(args)
---DEBUG(netrefl):print('RemoteClientConn:init', args)
+--DEBUG:print('RemoteClientConn:init', args)
 	RemoteClientConn.super.init(self)
 
 	self.netcom = assert(args.netcom)
@@ -50,7 +50,7 @@ args:
 	success
 --]]
 function RemoteClientConn:connect(args)
---DEBUG(netrefl):print('RemoteClientConn:connect addr',args.addr,'port',args.port)
+--DEBUG:print('RemoteClientConn:connect addr',args.addr,'port',args.port)
 	local sock, reason = socket.connect(args.addr, args.port)
 	if not sock then
 		print('failed to connect: '..tostring(reason))
@@ -100,7 +100,7 @@ local clientlistenReportSecond = 0
 
 -- coroutine
 function RemoteClientConn:listenCoroutine()
---DEBUG(netrefl):print('RemoteClientConn:listenCoroutine')
+--DEBUG:print('RemoteClientConn:listenCoroutine')
 	coroutine.yield()
 
 	local netcom = self.netcom
@@ -127,7 +127,7 @@ function RemoteClientConn:listenCoroutine()
 --]]
 
 			repeat
---DEBUG(netrefl):print("RemoteClientConn:listenCoroutine got data", data)
+--DEBUG:print("RemoteClientConn:listenCoroutine got data", data)
 				parser:setstr(data)
 
 				if #data > 0 then
@@ -146,7 +146,7 @@ function RemoteClientConn:listenCoroutine()
 						if cmd then
 							local entry = netcom.serverToClientObjects[cmd]
 							if entry then
---DEBUG(netrefl):print('RemoteClientConn:listenCoroutine netcom.serverToClientObjects got object', cmd)
+--DEBUG:print('RemoteClientConn:listenCoroutine netcom.serverToClientObjects got object', cmd)
 								netReceiveObj(parser, parser:next(), netcom.serverToClientObjects[cmd].object)
 							else
 								-- TODO this all parallels serverconn except ...
@@ -202,7 +202,7 @@ function RemoteClientConn:listenCoroutine()
 end
 
 function RemoteClientConn:sendCoroutine()
---DEBUG(netrefl):print('RemoteClientConn:sendCoroutine BEGIN')
+--DEBUG:print('RemoteClientConn:sendCoroutine BEGIN')
 	coroutine.yield()
 
 	local netcom = self.netcom
@@ -225,7 +225,7 @@ function RemoteClientConn:sendCoroutine()
 		coroutine.yield()
 	end
 
---DEBUG(netrefl):print('RemoteClientConn:sendCoroutine END')
+--DEBUG:print('RemoteClientConn:sendCoroutine END')
 end
 
 --[[
@@ -249,11 +249,11 @@ function RemoteClientConn:netcall(args)
 		self.socket,
 		function(parser)
 			local funcName = parser:next()
---DEBUG(netrefl):assert(funcName == name, "expected "..tostring(name).." got "..tostring(funcName))
---DEBUG(netrefl):print("RemoteClientConn:netcall query parser", parser.data)
---DEBUG(netrefl):print("RemoteClientConn:netcall #call.returnArgs", #call.returnArgs)
+--DEBUG:assert(funcName == name, "expected "..tostring(name).." got "..tostring(funcName))
+--DEBUG:print("RemoteClientConn:netcall query parser", parser.data)
+--DEBUG:print("RemoteClientConn:netcall #call.returnArgs", #call.returnArgs)
 			local returnArgs = netcom:decode(parser, self, name, call.returnArgs)
---DEBUG(netrefl):print("RemoteClientConn:netcall returnArgs", table.unpack(returnArgs))
+--DEBUG:print("RemoteClientConn:netcall returnArgs", table.unpack(returnArgs))
 			if args.done then
 				args.done(table.unpack(returnArgs, 1, #call.returnArgs))
 			end
