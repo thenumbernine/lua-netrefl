@@ -1,0 +1,24 @@
+name = "netrefl"
+files = {
+	["README"] = "netrefl/README",
+	["clientconn.lua"] = "netrefl/clientconn.lua",
+	["localclientconn.lua"] = "netrefl/localclientconn.lua",
+	["localserverconn.lua"] = "netrefl/localserverconn.lua",
+	["netcom.lua"] = "netrefl/netcom.lua",
+	["netfield.lua"] = "netrefl/netfield.lua",
+	["netfield_list.lua"] = "netrefl/netfield_list.lua",
+	["netfield_vec.lua"] = "netrefl/netfield_vec.lua",
+	["receiveblocking.lua"] = "netrefl/receiveblocking.lua",
+	["remoteclientconn.lua"] = "netrefl/remoteclientconn.lua",
+	["remotequery.lua"] = "netrefl/remotequery.lua",
+	["remoteserverconn.lua"] = "netrefl/remoteserverconn.lua",
+	["server.lua"] = "netrefl/server.lua",
+	["serverconn.lua"] = "netrefl/serverconn.lua",
+	["wordparser.lua"] = "netrefl/wordparser.lua",
+}
+deps = {
+	"ext",
+	"parser",
+	"threadmanager",
+	"vec",
+}
