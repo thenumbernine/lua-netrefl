@@ -7,11 +7,9 @@ local vec4 = require 'vec.vec4'
 
 -- ast.exec env, for vec table access
 local env = setmetatable({}, {__index=_G})
-env.vecClasses = {
-	[2] = vec2, 
-	[3] = vec3, 
-	[4] = vec4,
-}
+env.vec2 = vec2
+env.vec3 = vec3
+env.vec4 = vec4
 
 local resultClasses = {}
 
@@ -37,7 +35,8 @@ for dim=2,4 do
 			ast._return(
 				ast._concat(exprs:unpack())
 		))
-		ast.exec(nc.func__netencode, nil, nil, env)()
+--DEBUG:print(classname, '__netencode', nc.func__netencode:toLua())
+		assert(nc.func__netencode:exec(nil, nil, env))()
 	end
 
 	do
@@ -54,7 +53,8 @@ for dim=2,4 do
 				ast._call(ast._var(classname),
 					exprs:unpack()
 		)))
-		ast.exec(nc.func__netparse, nil, nil, env)()
+--DEBUG:print(classname, '__netparse', nc.func__netparse:toLua())
+		assert(nc.func__netparse:exec(nil, nil, env))()
 	end
 
 	do
@@ -64,7 +64,7 @@ for dim=2,4 do
 			ast._assign({ast._arg(2)}, {ast._call(ast._var(classname))})
 		))
 		for i=1,dim do
-			table.insert(stmts, 
+			table.insert(stmts,
 				ast._assign(
 					{ast._index(ast._arg(2), ast._number(i))},
 					{ast._index(ast._arg(1), ast._number(i))}
@@ -76,9 +76,10 @@ for dim=2,4 do
 			{ast._arg(),ast._arg()},	-- src, body
 			table.unpack(stmts)
 		)
-		ast.exec(nc.func__netcopy, nil, nil, env)()
+--DEBUG:print(classname, '__netcopy', nc.func__netcopy:toLua())
+		assert(nc.func__netcopy:exec(nil, nil, env))()
 	end
-	
+
 	-- should be the same as not a == b ?
 	nc.__netdiff = function(a,b) return a ~= b end
 	--nc.__netsend = NetField.__netsend	-- inherit from parent
