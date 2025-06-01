@@ -70,6 +70,7 @@ thoughts on remotecall ...
 
 local table = require 'ext.table'	-- used with :encode
 local class = require 'ext.class'
+local assert = require 'ext.assert'
 local Server = require 'netrefl.server'
 local RemoteClientConn = require 'netrefl.remoteclientconn'
 
@@ -184,9 +185,12 @@ args:
 	useDone = whether func calls done() itself
 --]]
 function NetCom:addCallForDir(field, callArgs)
-	assert(not self[field][name], "tried to add the same command twice to "..field)
-	self[field][assert(callArgs.name)] = {
-		name = assert(callArgs.name),
+	local name = assert.index(callArgs, 'name')
+	if self[field][name] then
+		error("tried to add the same command twice: "..field.." "..name)
+	end
+	self[field][name] = {
+		name = name,
 		preFunc = callArgs.preFunc,
 		postFunc = callArgs.postFunc,
 		func = assert(callArgs.func),
@@ -205,9 +209,10 @@ function NetCom:addServerToClientCall(args)
 end
 
 function NetCom:addObjectForDir(field, objArgs)
-	self[field][assert(objArgs.name)] = {
-		name = assert(objArgs.name),
-		object = assert(objArgs.object),
+	local name = assert.index(objArgs, 'name')
+	self[field][name] = {
+		name = name,
+		object = assert.index(objArgs, 'object'),
 	}
 end
 
